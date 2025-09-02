@@ -23,7 +23,7 @@
     <section class="contato-form">
       <h2>Entre em Contato</h2>
       <h3>Tem alguma dúvida ou sugestão? Escreva para nós!</h3>
-      <form id="formContato" href="#" method="post">
+      <form id="formContato" action="#" method="post">
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" required minlength="3">
         <div id="erroNome" class="erro"></div>
@@ -41,7 +41,7 @@
         <div id="erroMensagem" class="erro"></div>
 
         <button type="submit">Enviar</button>
-        <p id="msgSucesso" class="msg"></p>
+        <p id="msgSucesso" class="msg" role="status" aria-live="polite"></p>
       </form>
     </section>
   </main>
@@ -61,27 +61,58 @@
                 const erroTelefone = document.getElementById("erroTelefone");
 
                 telefoneInput.addEventListener("input", (e) => {
-                    // Aqui vai remover o que não é número
+                    // Remove tudo que não é número
                     let valor = e.target.value.replace(/\D/g, "");
 
                     // Aplica a máscara
-                    if (valor.length > 2 && valor.length <= 7) {
-                    // (51) 9999
-                    valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
-                    } else if (valor.length > 7) {
-                    // (51) 99999-9999
-                    valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7, 11)}`;
+                    if (valor.length > 2 && valor.length <= 6) {
+                        // DDD + até 4 dígitos do fixo
+                        valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+                    } else if (valor.length === 10) {
+                        // Fixo: (51) 3594-1295
+                        valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6, 10)}`;
+                    } else if (valor.length === 11) {
+                        // Celular: (51) 99313-5445
+                        valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7, 11)}`;
                     }
 
                     e.target.value = valor;
 
-                    // Validação: precisa ter DDD + 8 ou 9 dígitos
-                    const regex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+                    // Validação: precisa ter DDD + 8 (fixo) ou 9 (celular) dígitos
+                    const regex = /^\(\d{2}\)\s(\d{4}-\d{4}|\d{5}-\d{4})$/;
                     if (e.target.value && !regex.test(e.target.value)) {
-                    erroTelefone.textContent = "Digite um telefone válido (ex: (51) 99999-9999)";
+                        erroTelefone.textContent = "Digite um telefone válido (ex: (51) 3594-1295 ou (51) 99313-5445)";
                     } else {
-                    erroTelefone.textContent = "";
+                        erroTelefone.textContent = "";
                     }
+                });
+
+
+                const form = document.getElementById('formContato');
+                const msgSucesso = document.getElementById('msgSucesso');
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault(); // impede recarregar a página
+
+                    // Usa as validações nativas do HTML5 (required, minlength, type=email)
+                    // Se quiser mostrar bolhas nativas do navegador, use reportValidity():
+                    if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                    }
+
+                    // Se chegou aqui, está "ok" para a demo
+                    msgSucesso.textContent = 'Mensagem enviada!';
+                    msgSucesso.classList.add('mostrar'); // usa CSS pra estilizar/aparecer
+
+                    // opcional: limpar o formulário
+                    form.reset();
+
+                    // opcional: esconder a mensagem depois de alguns segundos
+                    setTimeout(() => {
+                    msgSucesso.textContent = '';
+                    msgSucesso.classList.remove('mostrar');
+                    }, 3500);
                 });
     </script>
 
