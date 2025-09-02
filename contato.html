@@ -81,7 +81,7 @@
                     // Validação: precisa ter DDD + 8 (fixo) ou 9 (celular) dígitos
                     const regex = /^\(\d{2}\)\s(\d{4}-\d{4}|\d{5}-\d{4})$/;
                     if (e.target.value && !regex.test(e.target.value)) {
-                        erroTelefone.textContent = "Digite um telefone válido (ex: (51) 3594-1295 ou (51) 99313-5445)";
+                        erroTelefone.textContent = "Digite um telefone válido (ex: (51) 3594-1295 ou (51) 99999-9999)";
                     } else {
                         erroTelefone.textContent = "";
                     }
